@@ -1,55 +1,62 @@
 import React from "react";
-import { View, Text, FlatList, VirtualizedList } from "react-native";
+import {
+  View,
+  Text,
+  FlatList,
+  VirtualizedList,
+  ScrollView,
+} from "react-native";
 import { Card, Icon } from "react-native-elements";
 import { DISHES } from "../shared/dishes";
 import { COMMENTS } from "../shared/comments";
 import { connect } from "react-redux";
 import { baseUrl } from "../shared/baseUrl";
+import { postFavorite } from "../redux/ActionCreators";
 
 const mapStateToProps = (state) => {
   return {
     dishes: state.dishes,
     comments: state.comments,
+    favorites: state.favorites,
   };
 };
-
+const mapDispatchToProps = (dispatch) => ({
+  postFavorite: (dishId) => dispatch(postFavorite(dishId)),
+});
 class Dishdetail extends React.Component {
   constructor(props) {
     super(props);
-    const { favorites } = this.props.route.params;
     const { dishId } = this.props.route.params;
 
     this.state = {
-      favorite: favorites.some((el) => el === dishId),
+      favorite: this.props.favorites.some((el) => el === dishId),
     };
   }
-
+  markFavorite = (dishId) => {
+    this.props.postFavorite(dishId);
+  };
   static navigationOptions = {
     title: "Dish Details",
-  };
-  markFavorite = (dishId) => {
-    this.setState({ favorites: this.state.favorites.concat(dishId) });
   };
 
   render() {
     const { dishId } = this.props.route.params;
-    const { markFavorite } = this.props.route.params;
     return (
-      <VirtualizedList>
+      <>
         <RenderDish
-          dish={this.state.dishes.dishes[+dishId]}
+          dish={this.props.dishes.dishes[+dishId]}
           favorite={this.state.favorite}
           onPress={() => {
-            markFavorite(dishId);
+            this.markFavorite(dishId);
             this.setState({ favorite: true });
           }}
         />
         <RenderComments
-          comments={this.state.comments.comments.filter(
+          comments={this.props.comments.comments.filter(
             (comment) => comment.dishId === dishId
           )}
         />
-      </VirtualizedList>
+      </>
     );
   }
 }
@@ -69,7 +76,8 @@ function RenderComments(props) {
   };
 
   return (
-    <Card title="Comments">
+    <Card>
+      <Card.Title>Comments</Card.Title>
       <FlatList
         data={comments}
         renderItem={renderCommentItem}
@@ -101,4 +109,4 @@ function RenderDish(props) {
     );
   else return <View></View>;
 }
-export default connect(mapStateToProps)(Dishdetail);
+export default connect(mapStateToProps, mapDispatchToProps)(Dishdetail);

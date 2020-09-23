@@ -5,6 +5,7 @@ import { DISHES } from "../shared/dishes";
 import { Tile } from "react-native-elements";
 import { connect } from "react-redux";
 import { baseUrl } from "../shared/baseUrl";
+import { Loading } from "./LoadingComponent";
 
 const mapStateToProps = (state) => {
   return {
@@ -30,6 +31,7 @@ class Menu extends React.Component {
     const renderMenuItem = ({ item, index }) => {
       return (
         <Tile
+          containerStyle={{ margin: 10 }}
           key={index}
           title={item.name}
           caption={item.description}
@@ -38,6 +40,7 @@ class Menu extends React.Component {
             navigate("Dishdetail", {
               dishId: item.id,
               favorites: this.state.favorites,
+              markFavorite: this.markFavorite,
             })
           }
           imageSrc={{ uri: baseUrl + item.image }}
@@ -45,6 +48,15 @@ class Menu extends React.Component {
       );
     };
     const { navigate } = this.props.navigation;
+    if (this.props.dishes.isLoading) {
+      return <Loading />;
+    } else if (this.props.dishes.errMess) {
+      return (
+        <View>
+          <Text>{props.dishes.errMess}</Text>
+        </View>
+      );
+    }
     return (
       <FlatList
         data={this.props.dishes.dishes}

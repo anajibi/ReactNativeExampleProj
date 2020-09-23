@@ -18,6 +18,7 @@ import {
   fetchPromos,
   fetchLeaders,
 } from "../redux/ActionCreators";
+import Reservation from "./ReservationComponent";
 
 const mapStateToProps = (state) => {
   return {
@@ -45,6 +46,28 @@ const screenOptionStyle = {
   },
 };
 
+const ReservationNavigator = createStackNavigator();
+
+const ReservationScreen = ({ navigation }) => (
+  <ReservationNavigator.Navigator>
+    <ReservationNavigator.Screen
+      name="Reservation"
+      component={Reservation}
+      initialParams={navigation}
+      options={({ navigation }) => ({
+        ...screenOptionStyle,
+        headerLeft: () => (
+          <Icon
+            name="menu"
+            size={24}
+            color="white"
+            onPress={() => navigation.toggleDrawer()}
+          />
+        ),
+      })}
+    />
+  </ReservationNavigator.Navigator>
+);
 const MenuStack = createStackNavigator();
 
 const DishdetailStack = ({ route, navigation }) => (
@@ -226,6 +249,20 @@ class Main extends React.Component {
                   type="font-awesome"
                   size={24}
                   color={tintColor}
+                />
+              ),
+            }}
+          />
+          <Drawer.Screen
+            name="Reservation"
+            component={ReservationScreen}
+            options={{
+              drawerIcon: ({ tintColor }) => (
+                <Icon
+                  name="cutlery"
+                  type="font-awesome"
+                  size={24}
+                  iconStyle={{ color: tintColor }}
                 />
               ),
             }}

@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "@react-native-community/masked-view": "~0.1.10",
+    "@react-native-community/picker": "^1.8.0",
     "@react-navigation/drawer": "~5.8.4",
     "@react-navigation/native": "~5.6.1",
     "@react-navigation/stack": "^5.9.0",
@@ -10,6 +11,7 @@
     "react": "~16.11.0",
     "react-dom": "~16.11.0",
     "react-native": "https://github.com/expo/react-native/archive/sdk-38.0.2.tar.gz",
+    "react-native-datepicker": "^1.7.2",
     "react-native-elements": "^2.3.2",
     "react-native-gesture-handler": "~1.6.1",
     "react-native-reanimated": "~1.9.0",

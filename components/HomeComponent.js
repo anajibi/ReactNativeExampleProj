@@ -6,6 +6,7 @@ import { PROMOTIONS } from "../shared/promotions";
 import { LEADERS } from "../shared/leaders";
 import { connect } from "react-redux";
 import { baseUrl } from "../shared/baseUrl";
+import { Loading } from "./LoadingComponent";
 
 const mapStateToProps = (state) => {
   return {
@@ -17,9 +18,16 @@ const mapStateToProps = (state) => {
 };
 
 function RenderItem(props) {
+  console.log(JSON.stringify(props));
   const item = props.item;
-
-  if (item != null) {
+  if (props.isLoading) return <Loading />;
+  else if (props.errMess)
+    return (
+      <view>
+        <Text>{props.errMess}</Text>
+      </view>
+    );
+  else if (item != null) {
     return (
       <Card>
         <Card.Image source={{ uri: baseUrl + item.image }}>
@@ -47,9 +55,11 @@ class Home extends Component {
           item={
             this.props.leaders.leaders.filter((leader) => leader.featured)[0]
           }
+          isLoading={this.props.leaders.isLoading}
         />
         <RenderItem
           item={this.props.dishes.dishes.filter((dish) => dish.featured)[0]}
+          isLoading={this.props.dishes.isLoading}
         />
         <RenderItem
           item={
@@ -57,6 +67,7 @@ class Home extends Component {
               (promo) => promo.featured
             )[0]
           }
+          isLoading={this.props.promotions.isLoading}
         />
       </ScrollView>
     );
