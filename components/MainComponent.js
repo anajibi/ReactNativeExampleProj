@@ -1,75 +1,238 @@
 import React from "react";
-import { Button, View } from "react-native";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import { NavigationContainer, useNavigation } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import MenuComponent from "./MenuComponent";
 import Dishdetail from "./DishdetailComponent";
+import { useRoute } from "@react-navigation/native";
+import Home from "./HomeComponent";
+import ContactComponent from "./ContactComponent";
+import AboutComponent from "./AboutComponent";
+import { Icon } from "react-native-elements";
+import { SafeAreaView } from "react-native";
+import CustomDrawerContent from "./DrawerCostumeContent";
+import { connect } from "react-redux";
+import {
+  fetchDishes,
+  fetchComments,
+  fetchPromos,
+  fetchLeaders,
+} from "../redux/ActionCreators";
+
+const mapStateToProps = (state) => {
+  return {
+    dishes: state.dishes,
+    comments: state.comments,
+    promotions: state.promotions,
+    leaders: state.leaders,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => ({
+  fetchDishes: () => dispatch(fetchDishes()),
+  fetchComments: () => dispatch(fetchComments()),
+  fetchPromos: () => dispatch(fetchPromos()),
+  fetchLeaders: () => dispatch(fetchLeaders()),
+});
+
+const screenOptionStyle = {
+  headerStyle: {
+    backgroundColor: "#512DA8",
+  },
+  headerTintColor: "#fff",
+  headerTitleStyle: {
+    color: "#fff",
+  },
+};
 
 const MenuStack = createStackNavigator();
-const MenuStackScreen = ({ navigation }) => (
-  <MenuStack.Navigator>
+
+const DishdetailStack = ({ route, navigation }) => (
+  <MenuStack.Navigator initialRouteName="Menu">
     <MenuStack.Screen
       name="Menu"
-      options={{
-        headerStyle: {
-          backgroundColor: "#512DA8",
-        },
-        headerTintColor: "#fff",
-        headerTitleStyle: {
-          color: "#fff",
-        },
-        headerLeft: () => (
-          <Button
-            onPress={() => {
-              if (navigation.canGoBack()) navigation.goBack();
-            }}
-            title="Back"
-            color="#fff"
-          />
-        ),
-      }}
       component={MenuComponent}
       initialParams={{ navigation }}
+      options={({ navigation }) => ({
+        ...screenOptionStyle,
+        headerLeft: () => (
+          <Icon
+            name="menu"
+            size={24}
+            color="white"
+            onPress={() => navigation.toggleDrawer()}
+          />
+        ),
+      })}
+    />
+    <MenuStack.Screen
+      name="Dishdetail"
+      component={Dishdetail}
+      initialParams={{
+        navigation,
+        route: useRoute(),
+      }}
+      options={({ navigation }) => ({
+        ...screenOptionStyle,
+        headerLeft: () => (
+          <Icon
+            name="menu"
+            size={24}
+            color="white"
+            onPress={() => navigation.toggleDrawer()}
+          />
+        ),
+      })}
     />
   </MenuStack.Navigator>
 );
-const DishdetailStack = ({ route, navigation }) => (
-  <MenuStack.Navigator>
-    <MenuStack.Screen
-      name="Dishdetail"
-      component={() => <Dishdetail navigation={navigation} route={route} />}
-      options={{
-        headerStyle: {
-          backgroundColor: "#512DA8",
-        },
-        headerTintColor: "#fff",
-        headerTitleStyle: {
-          color: "#fff",
-        },
+const HomeStack = createStackNavigator();
+
+const HomeScreen = () => (
+  <HomeStack.Navigator>
+    <HomeStack.Screen
+      name="Home"
+      component={Home}
+      options={({ navigation }) => ({
+        ...screenOptionStyle,
         headerLeft: () => (
-          <Button
-            onPress={() => {
-              if (navigation.canGoBack()) navigation.goBack();
-            }}
-            title="Back"
-            color="#fff"
+          <Icon
+            name="menu"
+            size={24}
+            color="white"
+            onPress={() => navigation.toggleDrawer()}
           />
         ),
-      }}
+      })}
     />
-  </MenuStack.Navigator>
+  </HomeStack.Navigator>
+);
+const ContactStack = createStackNavigator();
+
+const AboutStack = createStackNavigator();
+
+const ContactScreen = () => (
+  <ContactStack.Navigator>
+    <ContactStack.Screen
+      name={"Contact Information"}
+      component={ContactComponent}
+      options={({ navigation }) => ({
+        ...screenOptionStyle,
+        headerLeft: () => (
+          <Icon
+            name="menu"
+            size={24}
+            color="white"
+            onPress={() => navigation.toggleDrawer()}
+          />
+        ),
+      })}
+    />
+  </ContactStack.Navigator>
+);
+
+const AboutScreen = () => (
+  <AboutStack.Navigator>
+    <AboutStack.Screen
+      name={"About Us"}
+      component={AboutComponent}
+      options={({ navigation }) => ({
+        ...screenOptionStyle,
+        headerLeft: () => (
+          <Icon
+            name="menu"
+            size={24}
+            color="white"
+            onPress={() => navigation.toggleDrawer()}
+          />
+        ),
+      })}
+    />
+  </AboutStack.Navigator>
 );
 
 const Drawer = createDrawerNavigator();
 
-export default function Main() {
-  return (
-    <NavigationContainer>
-      <Drawer.Navigator initialRouteName="Home" overlayColor="transparent">
-        <Drawer.Screen name="Menu" component={MenuStackScreen} />
-        <Drawer.Screen name="Dishdetail" component={DishdetailStack} />
-      </Drawer.Navigator>
-    </NavigationContainer>
-  );
+class Main extends React.Component {
+  componentDidMount() {
+    this.props.fetchDishes();
+    this.props.fetchComments();
+    this.props.fetchPromos();
+    this.props.fetchLeaders();
+  }
+  render() {
+    return (
+      <NavigationContainer>
+        <Drawer.Navigator
+          drawerContent={(props) => <CustomDrawerContent {...props} />}
+          drawerType="slide"
+          initialRouteName="Home"
+          overlayColor="#"
+          drawerStyle={{
+            backgroundColor: "#c6cbef",
+            width: 240,
+          }}
+          contentComponent
+        >
+          <Drawer.Screen
+            name="Home"
+            component={HomeScreen}
+            options={{
+              drawerIcon: ({ tintColor }) => (
+                <Icon
+                  name="home"
+                  type="font-awesome"
+                  size={24}
+                  color={tintColor}
+                />
+              ),
+            }}
+          />
+          <Drawer.Screen
+            name="Menu"
+            component={DishdetailStack}
+            options={{
+              drawerIcon: ({ tintColor }) => (
+                <Icon
+                  name="list"
+                  type="font-awesome"
+                  size={24}
+                  color={tintColor}
+                />
+              ),
+            }}
+          />
+          <Drawer.Screen
+            name="Contact Us"
+            component={ContactScreen}
+            options={{
+              drawerIcon: ({ tintColor }) => (
+                <Icon
+                  name="address-card"
+                  type="font-awesome"
+                  size={22}
+                  color={tintColor}
+                />
+              ),
+            }}
+          />
+          <Drawer.Screen
+            name="About Us"
+            component={AboutScreen}
+            options={{
+              drawerIcon: ({ tintColor }) => (
+                <Icon
+                  name="info-circle"
+                  type="font-awesome"
+                  size={24}
+                  color={tintColor}
+                />
+              ),
+            }}
+          />
+        </Drawer.Navigator>
+      </NavigationContainer>
+    );
+  }
 }
+export default connect(mapStateToProps, mapDispatchToProps)(Main);

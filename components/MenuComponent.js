@@ -2,12 +2,20 @@ import React from "react";
 import { View, Text, FlatList } from "react-native";
 import { Avatar, Icon, ListItem } from "react-native-elements";
 import { DISHES } from "../shared/dishes";
+import { Tile } from "react-native-elements";
+import { connect } from "react-redux";
+import { baseUrl } from "../shared/baseUrl";
 
-export default class Menu extends React.Component {
+const mapStateToProps = (state) => {
+  return {
+    dishes: state.dishes,
+  };
+};
+class Menu extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      dishes: DISHES,
+      favorites: [],
     };
   }
 
@@ -15,31 +23,36 @@ export default class Menu extends React.Component {
     title: "Menu",
   };
 
+  markFavorite = (dishId) => {
+    this.setState({ favorites: this.state.favorites.concat(dishId) });
+  };
   render() {
     const renderMenuItem = ({ item, index }) => {
       return (
-        <ListItem
+        <Tile
           key={index}
-          leftAvatar={{ source: require(`./images/uthappizza.png`) }}
-          hideChevron={true}
-          bottomDivider
-          onPress={() => navigate("Dishdetail", { dishId: item.id })}
-        >
-          <ListItem.Content>
-            <ListItem.Title>{item.name}</ListItem.Title>
-            <ListItem.Subtitle>{item.description}</ListItem.Subtitle>
-            <ListItem.Subtitle>{item.description}</ListItem.Subtitle>
-          </ListItem.Content>
-        </ListItem>
+          title={item.name}
+          caption={item.description}
+          featured
+          onPress={() =>
+            navigate("Dishdetail", {
+              dishId: item.id,
+              favorites: this.state.favorites,
+            })
+          }
+          imageSrc={{ uri: baseUrl + item.image }}
+        />
       );
     };
     const { navigate } = this.props.navigation;
     return (
       <FlatList
-        data={this.state.dishes}
+        data={this.props.dishes.dishes}
         renderItem={renderMenuItem}
         keyExtractor={(item) => item.id.toString()}
       />
     );
   }
 }
+
+export default connect(mapStateToProps)(Menu);
