@@ -1,4 +1,5 @@
-import React, { Component } from "react";
+import React from "react";
+
 import {
   Text,
   View,
@@ -9,7 +10,8 @@ import {
   Modal,
   ScrollView,
 } from "react-native";
-class Reservation extends Component {
+
+class Reservation extends React.Component {
   constructor(props) {
     super(props);
 
