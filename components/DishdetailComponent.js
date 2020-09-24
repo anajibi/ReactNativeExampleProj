@@ -1,11 +1,20 @@
 import React from "react";
-import { View, Text, FlatList, Button, Modal } from "react-native";
+import {
+  View,
+  Text,
+  FlatList,
+  Button,
+  Modal,
+  Alert,
+  PanResponder,
+} from "react-native";
 import { Card, Icon, Rating, Input } from "react-native-elements";
 
 import { connect } from "react-redux";
 import { baseUrl } from "../shared/baseUrl";
 import { postFavorite, postComment } from "../redux/ActionCreators";
 import { StyleSheet } from "react-native";
+import * as Animatable from "react-native-animatable";
 const mapStateToProps = (state) => {
   return {
     dishes: state.dishes,
@@ -158,45 +167,92 @@ function RenderComments(props) {
   };
 
   return (
-    <Card>
-      <Card.Title>Comments</Card.Title>
-      <FlatList
-        data={comments}
-        renderItem={renderCommentItem}
-        keyExtractor={(item) => item.id.toString()}
-      />
-    </Card>
+    <Animatable.View animation="fadeInUp" duration={2000} delay={1000}>
+      <Card>
+        <Card.Title>Comments</Card.Title>
+        <FlatList
+          data={comments}
+          renderItem={renderCommentItem}
+          keyExtractor={(item) => item.id.toString()}
+        />
+      </Card>
+    </Animatable.View>
   );
 }
 function RenderDish(props) {
+  const recognizeDrag = ({ moveX, moveY, dx, dy }) => {
+    if (dx < -200) return true;
+    else return false;
+  };
+
+  const panResponder = PanResponder.create({
+    onStartShouldSetPanResponder: (e, gestureState) => {
+      return true;
+    },
+    onPanResponderEnd: (e, gestureState) => {
+      console.log("pan responder end", gestureState);
+      if (recognizeDrag(gestureState))
+        Alert.alert(
+          "Add Favorite",
+          "Are you sure you wish to add " + props.dish.name + " to favorite?",
+          [
+            {
+              text: "Cancel",
+              onPress: () => console.log("Cancel Pressed"),
+              style: "cancel",
+            },
+            {
+              text: "OK",
+              onPress: () => {
+                props.favorite
+                  ? console.log("Already favorite")
+                  : props.onPress();
+              },
+            },
+          ],
+          { cancelable: false }
+        );
+
+      return true;
+    },
+  });
   if (props.dish != null)
     return (
-      <Card style={{ flex: 1, flexDirection: "row" }}>
-        <Card.Image source={{ uri: baseUrl + props.dish.image }}>
-          <Card.FeaturedTitle>
-            <Text style={{ color: "black" }}>{props.dish.name}</Text>
-          </Card.FeaturedTitle>
-        </Card.Image>
-        <Text style={{ margin: 10 }}>{props.dish.description}</Text>
-        <View style={styles.icons}>
-          <Icon
-            raised
-            name={props.favorite ? "heart" : "heart-o"}
-            type="font-awesome"
-            color="#f50"
-            onPress={() =>
-              props.favorite ? console.log("Already favorite") : props.onPress()
-            }
-          />
-          <Icon
-            raised
-            name="pencil"
-            type="font-awesome"
-            color="#512DA8"
-            onPress={props.toggleModal}
-          />
-        </View>
-      </Card>
+      <Animatable.View
+        animation="fadeInDown"
+        duration={2000}
+        delay={1000}
+        {...panResponder.panHandlers}
+      >
+        <Card style={{ flex: 1, flexDirection: "row" }}>
+          <Card.Image source={{ uri: baseUrl + props.dish.image }}>
+            <Card.FeaturedTitle>
+              <Text style={{ color: "black" }}>{props.dish.name}</Text>
+            </Card.FeaturedTitle>
+          </Card.Image>
+          <Text style={{ margin: 10 }}>{props.dish.description}</Text>
+          <View style={styles.icons}>
+            <Icon
+              raised
+              name={props.favorite ? "heart" : "heart-o"}
+              type="font-awesome"
+              color="#f50"
+              onPress={() =>
+                props.favorite
+                  ? console.log("Already favorite")
+                  : props.onPress()
+              }
+            />
+            <Icon
+              raised
+              name="pencil"
+              type="font-awesome"
+              color="#512DA8"
+              onPress={props.toggleModal}
+            />
+          </View>
+        </Card>
+      </Animatable.View>
     );
   else return <View></View>;
 }

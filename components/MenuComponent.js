@@ -1,11 +1,12 @@
 import React from "react";
-import { View, Text, FlatList } from "react-native";
+import { View, Text, FlatList, ScrollView } from "react-native";
 import { Avatar, Icon, ListItem } from "react-native-elements";
 import { DISHES } from "../shared/dishes";
 import { Tile } from "react-native-elements";
 import { connect } from "react-redux";
 import { baseUrl } from "../shared/baseUrl";
 import { Loading } from "./LoadingComponent";
+import * as Animatable from "react-native-animatable";
 
 const mapStateToProps = (state) => {
   return {
@@ -30,21 +31,23 @@ class Menu extends React.Component {
   render() {
     const renderMenuItem = ({ item, index }) => {
       return (
-        <Tile
-          containerStyle={{ margin: 10 }}
-          key={index}
-          title={item.name}
-          caption={item.description}
-          featured
-          onPress={() =>
-            navigate("Dishdetail", {
-              dishId: item.id,
-              favorites: this.state.favorites,
-              markFavorite: this.markFavorite,
-            })
-          }
-          imageSrc={{ uri: baseUrl + item.image }}
-        />
+        <Animatable.View animation="fadeInDown" duration={2000} delay={1000}>
+          <Tile
+            containerStyle={{ margin: 10 }}
+            key={index}
+            title={item.name}
+            caption={item.description}
+            featured
+            onPress={() =>
+              navigate("Dishdetail", {
+                dishId: item.id,
+                favorites: this.state.favorites,
+                markFavorite: this.markFavorite,
+              })
+            }
+            imageSrc={{ uri: baseUrl + item.image }}
+          />
+        </Animatable.View>
       );
     };
     const { navigate } = this.props.navigation;
