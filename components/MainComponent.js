@@ -19,6 +19,7 @@ import {
   fetchLeaders,
 } from "../redux/ActionCreators";
 import Reservation from "./ReservationComponent";
+import Favorites from "./FavoriteComponent";
 
 const mapStateToProps = (state) => {
   return {
@@ -45,7 +46,28 @@ const screenOptionStyle = {
     color: "#fff",
   },
 };
+const FavoriteStack = createStackNavigator();
 
+const favoritesScreen = ({ navigation }) => (
+  <FavoriteStack.Navigator>
+    <FavoriteStack.Screen
+      name="favorite"
+      component={Favorites}
+      initialParams={{ navigation }}
+      options={({ navigation }) => ({
+        ...screenOptionStyle,
+        headerLeft: () => (
+          <Icon
+            name="menu"
+            size={24}
+            color="white"
+            onPress={() => navigation.toggleDrawer()}
+          />
+        ),
+      })}
+    />
+  </FavoriteStack.Navigator>
+);
 const ReservationNavigator = createStackNavigator();
 
 const ReservationScreen = ({ navigation }) => (
@@ -53,7 +75,7 @@ const ReservationScreen = ({ navigation }) => (
     <ReservationNavigator.Screen
       name="Reservation"
       component={Reservation}
-      initialParams={navigation}
+      initialParams={{ navigation }}
       options={({ navigation }) => ({
         ...screenOptionStyle,
         headerLeft: () => (
@@ -260,6 +282,20 @@ class Main extends React.Component {
               drawerIcon: ({ tintColor }) => (
                 <Icon
                   name="cutlery"
+                  type="font-awesome"
+                  size={24}
+                  iconStyle={{ color: tintColor }}
+                />
+              ),
+            }}
+          />
+          <Drawer.Screen
+            name="Favorites"
+            component={favoritesScreen}
+            options={{
+              drawerIcon: ({ tintColor }) => (
+                <Icon
+                  name="heart"
                   type="font-awesome"
                   size={24}
                   iconStyle={{ color: tintColor }}
