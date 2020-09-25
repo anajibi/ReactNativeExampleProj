@@ -20,6 +20,7 @@ import {
 } from "../redux/ActionCreators";
 import Reservation from "./ReservationComponent";
 import Favorites from "./FavoriteComponent";
+import Login from "./LoginComponent";
 
 const mapStateToProps = (state) => {
   return {
@@ -89,6 +90,28 @@ const ReservationScreen = ({ navigation }) => (
       })}
     />
   </ReservationNavigator.Navigator>
+);
+const LoginNavigator = createStackNavigator();
+
+const LoginScreen = ({ navigation }) => (
+  <LoginNavigator.Navigator>
+    <LoginNavigator.Screen
+      name="Login"
+      component={Login}
+      initialParams={{ navigation }}
+      options={({ navigation }) => ({
+        ...screenOptionStyle,
+        headerLeft: () => (
+          <Icon
+            name="menu"
+            size={24}
+            color="white"
+            onPress={() => navigation.toggleDrawer()}
+          />
+        ),
+      })}
+    />
+  </LoginNavigator.Navigator>
 );
 const MenuStack = createStackNavigator();
 
@@ -219,6 +242,20 @@ class Main extends React.Component {
           }}
           contentComponent
         >
+          <Drawer.Screen
+            name="Login"
+            component={LoginScreen}
+            options={{
+              drawerIcon: ({ tintColor }) => (
+                <Icon
+                  name="sign-in"
+                  type="font-awesome"
+                  size={24}
+                  color={tintColor}
+                />
+              ),
+            }}
+          />
           <Drawer.Screen
             name="Home"
             component={HomeScreen}
